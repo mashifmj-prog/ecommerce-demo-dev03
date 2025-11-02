@@ -1,0 +1,1174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SA Retail Demo - SPAR/Shoprite Style</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .fade-in { animation: fadeIn 0.5s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .slide-in { animation: slideIn 0.3s ease-out; }
+        @keyframes slideIn { from { transform: translateY(-10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .hidden { display: none; }
+        .page { min-height: 60vh; }
+        .brand-gradient { background: linear-gradient(135deg, #ff6b35 0%, #ff8e53 100%); }
+        .spar-gradient { background: linear-gradient(135deg, #d52b1e 0%, #ff6b6b 100%); }
+        .shoprite-gradient { background: linear-gradient(135deg, #0055a4 0%, #0088ce 100%); }
+        .pulse-glow { animation: pulseGlow 2s infinite; }
+        @keyframes pulseGlow { 
+            0%, 100% { box-shadow: 0 0 5px rgba(255, 107, 53, 0.5); }
+            50% { box-shadow: 0 0 20px rgba(255, 107, 53, 0.8); }
+        }
+        
+        /* Improved Image Styles */
+        .image-container {
+            position: relative;
+            overflow: hidden;
+            background: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .product-image {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            object-position: center;
+            max-height: 100%;
+            max-width: 100%;
+        }
+        .featured-image {
+            width: 100%;
+            height: 120px;
+            object-fit: contain;
+            object-position: center;
+        }
+        .cart-image {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+            object-position: center;
+        }
+        
+        /* Mobile Navigation Improvements */
+        .mobile-nav-open {
+            display: flex !important;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #d52b1e;
+            flex-direction: column;
+            padding: 1rem;
+            z-index: 1000;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Navigation Controls */
+        .nav-controls {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 10px;
+            border-radius: 50px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            backdrop-filter: blur(10px);
+        }
+        
+        .nav-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        .nav-btn.back { background: #3b82f6; color: white; }
+        .nav-btn.forward { background: #10b981; color: white; }
+        .nav-btn.refresh { background: #f59e0b; color: white; }
+        .nav-btn.home { background: #ef4444; color: white; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="spar-gradient text-white p-4 flex flex-col sm:flex-row sm:justify-between sm:items-center sticky top-0 z-50 shadow-lg">
+        <div class="flex justify-between items-center w-full sm:w-auto">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center">
+                    <span class="text-red-600 font-bold text-lg">🛒</span>
+                </div>
+                <h1 class="text-xl font-bold">SA Retail Hub</h1>
+            </div>
+            <button id="menu-btn" class="sm:hidden text-2xl">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+        <div id="nav-links" class="hidden sm:flex flex-col sm:flex-row sm:items-center gap-6 mt-2 sm:mt-0">
+            <a href="#home" class="hover:underline py-1 nav-link font-semibold"><i class="fas fa-home mr-2"></i>Home</a>
+            <a href="#categories" class="hover:underline py-1 nav-link font-semibold"><i class="fas fa-th-large mr-2"></i>Categories</a>
+            <a href="#deals" class="hover:underline py-1 nav-link font-semibold"><i class="fas fa-tag mr-2"></i>Hot Deals</a>
+            <a href="#cart" class="relative hover:underline py-1 nav-link font-semibold">
+                <i class="fas fa-shopping-cart mr-2"></i>Cart
+                <span id="cart-count" class="absolute -top-2 -right-2 bg-yellow-400 text-black rounded-full w-5 h-5 text-xs flex items-center justify-center hidden">0</span>
+            </a>
+            <a href="#contact" class="hover:underline py-1 nav-link font-semibold"><i class="fas fa-phone mr-2"></i>Contact</a>
+        </div>
+    </nav>
+
+    <!-- Multiple Promotional Banners -->
+    <div class="bg-yellow-400 text-black py-3 px-4 text-center font-bold flex items-center justify-center space-x-4">
+        <i class="fas fa-bolt text-red-600"></i>
+        <span>🚚 FREE DELIVERY on orders over R500!</span>
+        <i class="fas fa-bolt text-red-600"></i>
+    </div>
+    <div class="bg-red-600 text-white py-2 px-4 text-center font-bold">
+        <i class="fas fa-fire mr-2"></i>FLASH SALE: 20% OFF ALL DAIRY PRODUCTS - TODAY ONLY!
+    </div>
+
+    <!-- Page Content -->
+    <main>
+        <!-- Home Page -->
+        <div id="home-page" class="page">
+            <!-- Hero Section -->
+            <div class="shoprite-gradient text-white py-12 px-4 text-center">
+                <div class="max-w-4xl mx-auto">
+                    <h1 class="text-3xl md:text-5xl font-bold mb-4">Welcome to SA Retail Hub</h1>
+                    <p class="text-lg md:text-xl mb-8">Your favorite SPAR, Shoprite & Checkers products delivered to your door</p>
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                        <a href="#categories" class="bg-white text-blue-600 px-6 py-3 rounded-lg font-bold hover:bg-gray-100 transition nav-link">
+                            <i class="fas fa-shopping-basket mr-2"></i>Start Shopping
+                        </a>
+                        <a href="#deals" class="bg-yellow-400 text-black px-6 py-3 rounded-lg font-bold hover:bg-yellow-500 transition nav-link">
+                            <i class="fas fa-bolt mr-2"></i>View Hot Deals
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Store Brands -->
+            <div class="bg-white py-8 px-4">
+                <h2 class="text-2xl md:text-3xl font-bold text-center mb-8 text-gray-800">Our Retail Partners</h2>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 max-w-4xl mx-auto">
+                    <div class="bg-red-600 text-white p-4 md:p-6 rounded-lg text-center shadow-lg">
+                        <i class="fas fa-store text-3xl md:text-4xl mb-3"></i>
+                        <h3 class="font-bold text-lg md:text-xl">SPAR</h3>
+                        <p class="text-xs md:text-sm mt-2">Fresh & Local</p>
+                    </div>
+                    <div class="bg-blue-600 text-white p-4 md:p-6 rounded-lg text-center shadow-lg">
+                        <i class="fas fa-shopping-cart text-3xl md:text-4xl mb-3"></i>
+                        <h3 class="font-bold text-lg md:text-xl">Shoprite</h3>
+                        <p class="text-xs md:text-sm mt-2">Low Prices</p>
+                    </div>
+                    <div class="bg-green-600 text-white p-4 md:p-6 rounded-lg text-center shadow-lg">
+                        <i class="fas fa-star text-3xl md:text-4xl mb-3"></i>
+                        <h3 class="font-bold text-lg md:text-xl">Checkers</h3>
+                        <p class="text-xs md:text-sm mt-2">Quality First</p>
+                    </div>
+                    <div class="bg-purple-600 text-white p-4 md:p-6 rounded-lg text-center shadow-lg">
+                        <i class="fas fa-tag text-3xl md:text-4xl mb-3"></i>
+                        <h3 class="font-bold text-lg md:text-xl">USave</h3>
+                        <p class="text-xs md:text-sm mt-2">Best Value</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Featured Carousel -->
+            <div class="bg-gradient-to-r from-green-500 to-blue-600 text-white py-8 px-4">
+                <h2 class="text-xl md:text-2xl font-bold text-center mb-6">🔥 Weekly Specials</h2>
+                <div id="featured-carousel" class="flex overflow-x-auto gap-4 md:gap-6 pb-4 px-4">
+                    <!-- Featured products will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Quick Categories -->
+            <div class="bg-white py-8 px-4">
+                <h2 class="text-xl md:text-2xl font-bold text-center mb-6 text-gray-800">Shop by Category</h2>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 max-w-4xl mx-auto">
+                    <a href="#categories" class="category-card bg-red-50 border-2 border-red-200 rounded-lg p-3 md:p-4 text-center hover:bg-red-100 transition nav-link" data-category="Dairy">
+                        <i class="fas fa-cheese text-2xl md:text-3xl text-red-600 mb-2"></i>
+                        <h3 class="font-bold text-sm md:text-base text-red-700">Dairy</h3>
+                    </a>
+                    <a href="#categories" class="category-card bg-blue-50 border-2 border-blue-200 rounded-lg p-3 md:p-4 text-center hover:bg-blue-100 transition nav-link" data-category="Bakery">
+                        <i class="fas fa-bread-slice text-2xl md:text-3xl text-blue-600 mb-2"></i>
+                        <h3 class="font-bold text-sm md:text-base text-blue-700">Bakery</h3>
+                    </a>
+                    <a href="#categories" class="category-card bg-green-50 border-2 border-green-200 rounded-lg p-3 md:p-4 text-center hover:bg-green-100 transition nav-link" data-category="Beverages">
+                        <i class="fas fa-wine-bottle text-2xl md:text-3xl text-green-600 mb-2"></i>
+                        <h3 class="font-bold text-sm md:text-base text-green-700">Beverages</h3>
+                    </a>
+                    <a href="#categories" class="category-card bg-yellow-50 border-2 border-yellow-200 rounded-lg p-3 md:p-4 text-center hover:bg-yellow-100 transition nav-link" data-category="Snacks">
+                        <i class="fas fa-cookie text-2xl md:text-3xl text-yellow-600 mb-2"></i>
+                        <h3 class="font-bold text-sm md:text-base text-yellow-700">Snacks</h3>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Products Grid -->
+            <div class="p-4">
+                <h2 class="text-xl md:text-2xl font-bold mb-4 text-gray-800">Popular Products</h2>
+                
+                <!-- Search and Filters -->
+                <div class="p-4 bg-white shadow-sm rounded-lg mb-6">
+                    <div class="flex flex-col sm:flex-row gap-3 md:gap-4 mb-4">
+                        <div class="flex-1 relative">
+                            <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                            <input type="text" id="search-input" placeholder="Search products..." class="w-full border p-2 pl-10 rounded-lg text-sm md:text-base">
+                        </div>
+                        <select id="category-filter" class="border p-2 rounded-lg text-sm md:text-base">
+                            <option value="All">All Categories</option>
+                        </select>
+                        <select id="store-filter" class="border p-2 rounded-lg text-sm md:text-base">
+                            <option value="All">All Stores</option>
+                            <option value="SPAR">SPAR</option>
+                            <option value="Shoprite">Shoprite</option>
+                            <option value="Checkers">Checkers</option>
+                            <option value="USave">USave</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+                    <!-- Products will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Categories Page -->
+        <div id="categories-page" class="page hidden">
+            <div class="p-4">
+                <h2 class="text-2xl md:text-3xl font-bold mb-6 text-gray-800">All Categories</h2>
+                <div id="categories-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+                    <!-- Categories will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Deals Page -->
+        <div id="deals-page" class="page hidden">
+            <div class="p-4">
+                <div class="bg-red-600 text-white p-4 md:p-6 rounded-lg mb-6 text-center">
+                    <h2 class="text-xl md:text-3xl font-bold mb-2">🔥 HOT DEALS ZONE 🔥</h2>
+                    <p class="text-base md:text-xl">Limited time offers - Shop now before they're gone!</p>
+                </div>
+                <div id="deals-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+                    <!-- Deals will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Cart Page -->
+        <div id="cart-page" class="page hidden">
+            <div class="p-4">
+                <h2 class="text-2xl md:text-3xl font-bold mb-6 text-gray-800">Your Shopping Cart</h2>
+                <div id="cart-items" class="space-y-4 mb-6">
+                    <!-- Cart items will be loaded here -->
+                </div>
+                <div id="cart-total" class="bg-white p-4 md:p-6 rounded-lg shadow-sm hidden">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg md:text-xl font-bold">Subtotal: R<span id="subtotal-amount">0.00</span></h3>
+                        <h3 class="text-lg md:text-xl font-bold">Delivery: R<span id="delivery-cost">50.00</span></h3>
+                    </div>
+                    <div class="border-t pt-4">
+                        <h3 class="text-xl md:text-2xl font-bold text-green-600">Total: R<span id="total-amount">0.00</span></h3>
+                    </div>
+                    <button id="checkout-btn" class="bg-green-600 text-white px-4 py-3 md:px-6 md:py-4 rounded-lg hover:bg-green-700 transition w-full text-center font-bold text-lg mt-4">
+                        <i class="fas fa-lock mr-2"></i>Proceed to Secure Checkout
+                    </button>
+                </div>
+                <div id="empty-cart" class="text-center py-8 md:py-12">
+                    <i class="fas fa-shopping-cart text-4xl md:text-6xl text-gray-300 mb-4"></i>
+                    <h2 class="text-xl md:text-2xl font-bold mb-4 text-gray-500">Your Cart is Empty</h2>
+                    <a href="#home" class="bg-green-600 text-white px-4 py-2 md:px-6 md:py-3 rounded-lg hover:bg-green-700 transition inline-block nav-link">
+                        <i class="fas fa-shopping-basket mr-2"></i>Start Shopping
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Checkout Page -->
+        <div id="checkout-page" class="page hidden">
+            <div class="p-4 max-w-6xl mx-auto">
+                <h2 class="text-2xl md:text-3xl font-bold mb-6 text-gray-800">Secure Checkout</h2>
+                <div id="checkout-content">
+                    <!-- Checkout form will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact Page -->
+        <div id="contact-page" class="page hidden">
+            <div class="p-4 max-w-4xl mx-auto">
+                <h2 class="text-2xl md:text-3xl font-bold mb-6 text-gray-800">Contact Us</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+                    <div class="bg-white p-4 md:p-6 rounded-lg shadow-sm">
+                        <h3 class="text-lg md:text-xl font-bold mb-4">Get in Touch</h3>
+                        <form id="contact-form" class="space-y-4">
+                            <div>
+                                <label class="block font-bold mb-2">Full Name</label>
+                                <input type="text" required class="w-full border p-3 rounded-lg">
+                            </div>
+                            <div>
+                                <label class="block font-bold mb-2">Email</label>
+                                <input type="email" required class="w-full border p-3 rounded-lg">
+                            </div>
+                            <div>
+                                <label class="block font-bold mb-2">Message</label>
+                                <textarea required class="w-full border p-3 rounded-lg" rows="4" placeholder="How can we help you?"></textarea>
+                            </div>
+                            <button type="submit" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition w-full font-bold">
+                                Send Message
+                            </button>
+                        </form>
+                    </div>
+                    <div class="space-y-4 md:space-y-6">
+                        <div class="bg-white p-4 md:p-6 rounded-lg shadow-sm">
+                            <h3 class="text-lg md:text-xl font-bold mb-4">Store Information</h3>
+                            <div class="space-y-3">
+                                <div class="flex items-center space-x-3">
+                                    <i class="fas fa-map-marker-alt text-green-600"></i>
+                                    <span class="text-sm md:text-base">123 Main Street, Johannesburg, SA</span>
+                                </div>
+                                <div class="flex items-center space-x-3">
+                                    <i class="fas fa-phone text-green-600"></i>
+                                    <span class="text-sm md:text-base">+27 11 123 4567</span>
+                                </div>
+                                <div class="flex items-center space-x-3">
+                                    <i class="fas fa-envelope text-green-600"></i>
+                                    <span class="text-sm md:text-base">info@saretailhub.co.za</span>
+                                </div>
+                                <div class="flex items-center space-x-3">
+                                    <i class="fas fa-clock text-green-600"></i>
+                                    <span class="text-sm md:text-base">Mon-Sun: 7:00 AM - 9:00 PM</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white p-4 md:p-6 rounded-lg shadow-sm">
+                            <h3 class="text-lg md:text-xl font-bold mb-4">Delivery Areas</h3>
+                            <ul class="list-disc list-inside space-y-2 text-sm md:text-base text-gray-600">
+                                <li>Johannesburg & Surroundings</li>
+                                <li>Pretoria Metro</li>
+                                <li>Ekuthuleni Region</li>
+                                <li>Same-day delivery available</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white p-6 md:p-8 mt-8 md:mt-12">
+        <div class="max-w-6xl mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 md:gap-8">
+                <div>
+                    <h3 class="text-lg md:text-xl font-bold mb-4">SA Retail Hub</h3>
+                    <p class="text-sm md:text-base text-gray-300">Your one-stop shop for all your grocery needs. Bringing the best of SPAR, Shoprite, Checkers, and USave to your doorstep.</p>
+                </div>
+                <div>
+                    <h4 class="font-bold mb-4">Quick Links</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#home" class="text-sm md:text-base text-gray-300 hover:text-white nav-link">Home</a></li>
+                        <li><a href="#categories" class="text-sm md:text-base text-gray-300 hover:text-white nav-link">Categories</a></li>
+                        <li><a href="#deals" class="text-sm md:text-base text-gray-300 hover:text-white nav-link">Hot Deals</a></li>
+                        <li><a href="#contact" class="text-sm md:text-base text-gray-300 hover:text-white nav-link">Contact</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold mb-4">Customer Service</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-sm md:text-base text-gray-300 hover:text-white">Delivery Info</a></li>
+                        <li><a href="#" class="text-sm md:text-base text-gray-300 hover:text-white">Returns Policy</a></li>
+                        <li><a href="#" class="text-sm md:text-base text-gray-300 hover:text-white">Privacy Policy</a></li>
+                        <li><a href="#" class="text-sm md:text-base text-gray-300 hover:text-white">Terms of Service</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold mb-4">Newsletter</h4>
+                    <form id="newsletter-form" class="space-y-2">
+                        <input type="email" id="newsletter-email" placeholder="Enter your email" class="w-full p-2 rounded text-black text-sm md:text-base" required>
+                        <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition w-full font-bold text-sm md:text-base">
+                            Subscribe
+                        </button>
+                    </form>
+                    <div class="flex space-x-4 mt-4">
+                        <a href="#" class="text-gray-300 hover:text-white"><i class="fab fa-facebook text-lg md:text-xl"></i></a>
+                        <a href="#" class="text-gray-300 hover:text-white"><i class="fab fa-twitter text-lg md:text-xl"></i></a>
+                        <a href="#" class="text-gray-300 hover:text-white"><i class="fab fa-instagram text-lg md:text-xl"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-6 md:mt-8 pt-4 md:pt-6 text-center text-sm md:text-base text-gray-300">
+                <p>&copy; 2024 SA Retail Hub. All rights reserved. | Proudly South African</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Navigation Controls -->
+    <div class="nav-controls">
+        <button class="nav-btn back" title="Go Back">
+            <i class="fas fa-arrow-left"></i>
+        </button>
+        <button class="nav-btn home" title="Go Home">
+            <i class="fas fa-home"></i>
+        </button>
+        <button class="nav-btn refresh" title="Refresh Display">
+            <i class="fas fa-sync-alt"></i>
+        </button>
+        <button class="nav-btn forward" title="Go Forward">
+            <i class="fas fa-arrow-right"></i>
+        </button>
+    </div>
+
+    <!-- Back to Top Button -->
+    <button id="back-to-top" class="fixed bottom-24 right-6 bg-green-600 text-white p-3 rounded-full shadow-lg hover:bg-green-700 transition z-50 hidden">
+        <i class="fas fa-chevron-up"></i>
+    </button>
+
+    <script>
+        // Enhanced Mock Data - South African Retail Products
+        const productsData = [
+            // SPAR Products
+            { id: 1, name: "SPAR Fresh Milk 2L", category: "Dairy", price: 35.99, store: "SPAR", image: "images/milk.jpg", featured: true, discount: "15% off", bestSeller: true, deal: true },
+            { id: 2, name: "SPAR Brown Bread 800g", category: "Bakery", price: 18.50, store: "SPAR", image: "images/bread.jpg", featured: true, bestSeller: false },
+            { id: 3, name: "SPAR Free Range Eggs 12", category: "Dairy", price: 42.00, store: "SPAR", image: "images/eggs.jpg", featured: false, discount: "10% off", deal: true },
+            
+            // Shoprite Products
+            { id: 4, name: "Shoprite Coca-Cola 2L", category: "Beverages", price: 26.99, store: "Shoprite", image: "images/coke.jpg", featured: true, discount: "5% off", bestSeller: true },
+            { id: 5, name: "Shoprite Rice 5kg", category: "Grocery", price: 115.00, store: "Shoprite", image: "images/rice.jpg", featured: false, bestSeller: true },
+            { id: 6, name: "Shoprite Cooking Oil 2L", category: "Grocery", price: 55.00, store: "Shoprite", image: "images/oil.jpg", featured: false, deal: true },
+            
+            // Checkers Products
+            { id: 7, name: "Checkers Premium Beef 1kg", category: "Meat", price: 129.99, store: "Checkers", image: "images/beef.jpg", featured: true, bestSeller: true },
+            { id: 8, name: "Checkers Fresh Chicken 2kg", category: "Meat", price: 89.99, store: "Checkers", image: "images/chicken.jpg", featured: false, discount: "20% off", deal: true },
+            { id: 9, name: "Checkers Cheese 500g", category: "Dairy", price: 65.00, store: "Checkers", image: "images/cheese.jpg", featured: false },
+            
+            // USave Products
+            { id: 10, name: "USave Pasta 500g", category: "Grocery", price: 12.99, store: "USave", image: "images/pasta.jpg", featured: false, bestSeller: true },
+            { id: 11, name: "USave Tomato Sauce 750ml", category: "Grocery", price: 18.50, store: "USave", image: "images/sauce.jpg", featured: false },
+            { id: 12, name: "USave Bath Soap 4-pack", category: "Household", price: 35.00, store: "USave", image: "images/soap.jpg", featured: false, deal: true },
+            
+            // More products
+            { id: 13, name: "SPAR Yogurt 1kg", category: "Dairy", price: 45.00, store: "SPAR", image: "images/yogurt.jpg", featured: false },
+            { id: 14, name: "Shoprite Cereal 500g", category: "Breakfast", price: 38.00, store: "Shoprite", image: "images/cereal.jpg", featured: false, discount: "Buy 1 Get 1", deal: true },
+            { id: 15, name: "Checkers Juice 1L", category: "Beverages", price: 24.99, store: "Checkers", image: "images/juice.jpg", featured: false },
+            { id: 16, name: "USave Biscuits 200g", category: "Snacks", price: 15.00, store: "USave", image: "images/biscuits.jpg", featured: false, bestSeller: true },
+            { id: 17, name: "SPAR Coffee 250g", category: "Beverages", price: 89.99, store: "SPAR", image: "images/coffee.jpg", featured: false },
+            { id: 18, name: "Shoprite Tea 100 bags", category: "Beverages", price: 52.00, store: "Shoprite", image: "images/tea.jpg", featured: false, deal: true },
+            { id: 19, name: "Checkers Butter 500g", category: "Dairy", price: 75.00, store: "Checkers", image: "images/butter.jpg", featured: false },
+            { id: 20, name: "USave Sugar 2kg", category: "Grocery", price: 38.00, store: "USave", image: "images/sugar.jpg", featured: false, discount: "12% off", deal: true }
+        ];
+
+        // Cart State
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+        // Navigation history
+        let navHistory = ['home'];
+        let currentNavIndex = 0;
+
+        // DOM Elements
+        const elements = {
+            menuBtn: document.getElementById('menu-btn'),
+            navLinks: document.getElementById('nav-links'),
+            cartCount: document.getElementById('cart-count'),
+            homePage: document.getElementById('home-page'),
+            categoriesPage: document.getElementById('categories-page'),
+            dealsPage: document.getElementById('deals-page'),
+            cartPage: document.getElementById('cart-page'),
+            checkoutPage: document.getElementById('checkout-page'),
+            contactPage: document.getElementById('contact-page'),
+            featuredCarousel: document.getElementById('featured-carousel'),
+            productsGrid: document.getElementById('products-grid'),
+            categoriesGrid: document.getElementById('categories-grid'),
+            dealsGrid: document.getElementById('deals-grid'),
+            categoryFilter: document.getElementById('category-filter'),
+            storeFilter: document.getElementById('store-filter'),
+            searchInput: document.getElementById('search-input'),
+            cartItems: document.getElementById('cart-items'),
+            cartTotal: document.getElementById('cart-total'),
+            emptyCart: document.getElementById('empty-cart'),
+            subtotalAmount: document.getElementById('subtotal-amount'),
+            deliveryCost: document.getElementById('delivery-cost'),
+            totalAmount: document.getElementById('total-amount'),
+            checkoutBtn: document.getElementById('checkout-btn'),
+            checkoutContent: document.getElementById('checkout-content'),
+            backToTop: document.getElementById('back-to-top'),
+            newsletterForm: document.getElementById('newsletter-form'),
+            contactForm: document.getElementById('contact-form')
+        };
+
+        // Initialize App
+        function initApp() {
+            setupEventListeners();
+            loadCategories();
+            loadStores();
+            renderFeaturedProducts();
+            renderAllProducts();
+            renderCategoriesPage();
+            renderDealsPage();
+            updateCartDisplay();
+            showPage('home');
+        }
+
+        // Event Listeners
+        function setupEventListeners() {
+            // Mobile menu
+            elements.menuBtn.addEventListener('click', () => {
+                elements.navLinks.classList.toggle('mobile-nav-open');
+            });
+
+            // Close mobile menu when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!elements.navLinks.contains(e.target) && !elements.menuBtn.contains(e.target)) {
+                    elements.navLinks.classList.remove('mobile-nav-open');
+                }
+            });
+
+            // Navigation
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const page = link.getAttribute('href').substring(1);
+                    addToHistory(page);
+                    showPage(page);
+                    elements.navLinks.classList.remove('mobile-nav-open');
+                });
+            });
+
+            // Quick category cards
+            document.querySelectorAll('.category-card').forEach(card => {
+                card.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const category = card.getAttribute('data-category');
+                    elements.categoryFilter.value = category;
+                    renderAllProducts();
+                    addToHistory('home');
+                    showPage('home');
+                });
+            });
+
+            // Search and filter
+            elements.searchInput.addEventListener('input', renderAllProducts);
+            elements.categoryFilter.addEventListener('change', renderAllProducts);
+            elements.storeFilter.addEventListener('change', renderAllProducts);
+
+            // Checkout
+            elements.checkoutBtn.addEventListener('click', () => {
+                addToHistory('checkout');
+                showPage('checkout');
+            });
+
+            // Back to top
+            elements.backToTop.addEventListener('click', () => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+
+            // Newsletter
+            elements.newsletterForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const email = document.getElementById('newsletter-email').value;
+                if (email) {
+                    alert(`Thank you for subscribing with ${email}! You'll receive our weekly specials and offers.`);
+                    elements.newsletterForm.reset();
+                }
+            });
+
+            // Contact form
+            if (elements.contactForm) {
+                elements.contactForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    alert('Thank you for your message! We will get back to you within 24 hours.');
+                    elements.contactForm.reset();
+                });
+            }
+
+            // Scroll event for back to top button
+            window.addEventListener('scroll', () => {
+                elements.backToTop.classList.toggle('hidden', window.pageYOffset < 300);
+            });
+
+            // Handle browser back/forward buttons
+            window.addEventListener('hashchange', () => {
+                const page = window.location.hash.substring(1) || 'home';
+                addToHistory(page);
+                showPage(page);
+            });
+
+            // Navigation Controls
+            document.querySelector('.nav-btn.back').addEventListener('click', goBack);
+            document.querySelector('.nav-btn.forward').addEventListener('click', goForward);
+            document.querySelector('.nav-btn.refresh').addEventListener('click', refreshDisplay);
+            document.querySelector('.nav-btn.home').addEventListener('click', () => {
+                addToHistory('home');
+                showPage('home');
+            });
+        }
+
+        // Navigation History Functions
+        function addToHistory(page) {
+            // Remove any future history if we're not at the end
+            navHistory = navHistory.slice(0, currentNavIndex + 1);
+            navHistory.push(page);
+            currentNavIndex = navHistory.length - 1;
+        }
+
+        function goBack() {
+            if (currentNavIndex > 0) {
+                currentNavIndex--;
+                showPage(navHistory[currentNavIndex], false);
+            }
+        }
+
+        function goForward() {
+            if (currentNavIndex < navHistory.length - 1) {
+                currentNavIndex++;
+                showPage(navHistory[currentNavIndex], false);
+            }
+        }
+
+        function refreshDisplay() {
+            const currentPage = navHistory[currentNavIndex];
+            if (currentPage === 'home') {
+                renderAllProducts();
+                renderFeaturedProducts();
+            } else if (currentPage === 'categories') {
+                renderCategoriesPage();
+            } else if (currentPage === 'deals') {
+                renderDealsPage();
+            } else if (currentPage === 'cart') {
+                renderCart();
+            }
+            updateCartDisplay();
+            
+            // Show refresh animation
+            const refreshBtn = document.querySelector('.nav-btn.refresh');
+            refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            setTimeout(() => {
+                refreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i>';
+            }, 500);
+        }
+
+        // Page Navigation
+        function showPage(page, addToHist = true) {
+            if (addToHist) {
+                addToHistory(page);
+            }
+
+            // Hide all pages
+            elements.homePage.classList.add('hidden');
+            elements.categoriesPage.classList.add('hidden');
+            elements.dealsPage.classList.add('hidden');
+            elements.cartPage.classList.add('hidden');
+            elements.checkoutPage.classList.add('hidden');
+            elements.contactPage.classList.add('hidden');
+
+            // Show selected page
+            if (page === 'home') {
+                elements.homePage.classList.remove('hidden');
+                window.location.hash = 'home';
+            } else if (page === 'categories') {
+                elements.categoriesPage.classList.remove('hidden');
+                window.location.hash = 'categories';
+            } else if (page === 'deals') {
+                elements.dealsPage.classList.remove('hidden');
+                window.location.hash = 'deals';
+            } else if (page === 'cart') {
+                elements.cartPage.classList.remove('hidden');
+                renderCart();
+                window.location.hash = 'cart';
+            } else if (page === 'checkout') {
+                elements.checkoutPage.classList.remove('hidden');
+                renderCheckout();
+                window.location.hash = 'checkout';
+            } else if (page === 'contact') {
+                elements.contactPage.classList.remove('hidden');
+                window.location.hash = 'contact';
+            }
+
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+
+        // Load Categories
+        function loadCategories() {
+            const categories = ['All', ...new Set(productsData.map(p => p.category))];
+            elements.categoryFilter.innerHTML = categories.map(cat => 
+                `<option value="${cat}">${cat}</option>`
+            ).join('');
+        }
+
+        // Load Stores
+        function loadStores() {
+            const stores = ['All', ...new Set(productsData.map(p => p.store))];
+            // Already defined in HTML
+        }
+
+        // Render Featured Products
+        function renderFeaturedProducts() {
+            const featuredProducts = productsData.filter(p => p.featured);
+            elements.featuredCarousel.innerHTML = featuredProducts.map(product => `
+                <div class="bg-white text-black rounded-xl p-4 shadow-2xl min-w-[280px] flex flex-col items-center border-2 border-yellow-400 pulse-glow">
+                    ${product.discount ? `<div class="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 text-xs font-bold rounded-full">${product.discount}</div>` : ''}
+                    ${product.bestSeller ? `<div class="absolute top-2 right-2 bg-yellow-400 text-black px-2 py-1 text-xs font-bold rounded-full">🔥 Hot</div>` : ''}
+                    <div class="mb-2 text-xs font-semibold bg-${getStoreColor(product.store)}-100 text-${getStoreColor(product.store)}-800 px-2 py-1 rounded-full">${product.store}</div>
+                    <div class="image-container w-32 h-32 rounded-lg mb-3">
+                        <img src="${product.image}" alt="${product.name}" 
+                             class="product-image"
+                             onerror="this.src='https://via.placeholder.com/128x128/4ade80/ffffff?text=Product'">
+                    </div>
+                    <h3 class="font-bold text-center mb-2 text-sm">${product.name}</h3>
+                    <p class="text-green-600 font-bold text-lg mb-3">R${product.price.toFixed(2)}</p>
+                    <button onclick="addToCart(${product.id})" 
+                            class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition font-bold w-full text-sm">
+                        <i class="fas fa-cart-plus mr-1"></i>Add to Cart
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        // Render All Products
+        function renderAllProducts() {
+            const searchTerm = elements.searchInput.value.toLowerCase();
+            const selectedCategory = elements.categoryFilter.value;
+            const selectedStore = elements.storeFilter.value;
+
+            const filteredProducts = productsData.filter(product => {
+                const matchesSearch = product.name.toLowerCase().includes(searchTerm);
+                const matchesCategory = selectedCategory === 'All' || product.category === selectedCategory;
+                const matchesStore = selectedStore === 'All' || product.store === selectedStore;
+                return matchesSearch && matchesCategory && matchesStore;
+            });
+
+            if (filteredProducts.length === 0) {
+                elements.productsGrid.innerHTML = `
+                    <div class="col-span-full text-center py-8">
+                        <i class="fas fa-search text-4xl text-gray-300 mb-3"></i>
+                        <h3 class="text-lg font-bold text-gray-500 mb-2">No products found</h3>
+                        <p class="text-gray-400 text-sm">Try adjusting your search or filters</p>
+                    </div>
+                `;
+                return;
+            }
+
+            elements.productsGrid.innerHTML = filteredProducts.map(product => `
+                <div class="bg-white rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100">
+                    ${product.discount ? `<div class="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 text-xs font-bold rounded-full z-10">${product.discount}</div>` : ''}
+                    ${product.bestSeller ? `<div class="absolute top-2 right-2 bg-yellow-400 text-black px-2 py-1 text-xs font-bold rounded-full z-10">⭐ Best</div>` : ''}
+                    ${product.deal ? `<div class="absolute bottom-2 left-2 bg-green-500 text-white px-2 py-1 text-xs font-bold rounded-full z-10">🔥 Deal</div>` : ''}
+                    
+                    <div class="p-1">
+                        <div class="text-xs font-semibold bg-${getStoreColor(product.store)}-100 text-${getStoreColor(product.store)}-800 px-2 py-1 rounded-full inline-block m-1">${product.store}</div>
+                    </div>
+                    
+                    <div class="image-container h-40 rounded-t-lg">
+                        <img src="${product.image}" alt="${product.name}" 
+                             class="product-image"
+                             onerror="this.src='https://via.placeholder.com/200x160/4ade80/ffffff?text=Product'">
+                    </div>
+                    
+                    <div class="p-3">
+                        <h2 class="font-bold text-sm mb-1 text-gray-800 line-clamp-2">${product.name}</h2>
+                        <p class="text-gray-600 text-xs mb-2">${product.category}</p>
+                        <p class="text-green-600 font-bold text-lg mb-3">R${product.price.toFixed(2)}</p>
+                        <button onclick="addToCart(${product.id})" 
+                                class="bg-green-600 text-white px-3 py-2 rounded-lg hover:bg-green-700 transition w-full font-semibold text-sm">
+                            <i class="fas fa-cart-plus mr-1"></i>Add to Cart
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Render Categories Page
+        function renderCategoriesPage() {
+            const categories = [...new Set(productsData.map(p => p.category))];
+            const categoryIcons = {
+                'Dairy': 'fa-cheese',
+                'Bakery': 'fa-bread-slice',
+                'Beverages': 'fa-wine-bottle',
+                'Meat': 'fa-drumstick-bite',
+                'Grocery': 'fa-shopping-basket',
+                'Snacks': 'fa-cookie',
+                'Breakfast': 'fa-egg',
+                'Household': 'fa-home'
+            };
+
+            const categoryColors = {
+                'Dairy': 'red',
+                'Bakery': 'blue',
+                'Beverages': 'green',
+                'Meat': 'pink',
+                'Grocery': 'yellow',
+                'Snacks': 'purple',
+                'Breakfast': 'indigo',
+                'Household': 'gray'
+            };
+
+            elements.categoriesGrid.innerHTML = categories.map(category => {
+                const categoryProducts = productsData.filter(p => p.category === category);
+                const icon = categoryIcons[category] || 'fa-tag';
+                const color = categoryColors[category] || 'gray';
+                return `
+                    <div class="bg-white rounded-lg shadow-lg hover:shadow-xl transition cursor-pointer" onclick="filterByCategory('${category}')">
+                        <div class="bg-${color}-500 text-white p-4 rounded-t-lg text-center">
+                            <i class="fas ${icon} text-3xl mb-2"></i>
+                            <h3 class="font-bold text-lg">${category}</h3>
+                        </div>
+                        <div class="p-3 text-center">
+                            <p class="text-gray-600 text-sm">${categoryProducts.length} products</p>
+                            <button class="bg-${color}-500 text-white px-3 py-1 rounded-lg hover:bg-${color}-600 transition mt-2 text-sm">
+                                Browse Products
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Render Deals Page
+        function renderDealsPage() {
+            const dealProducts = productsData.filter(p => p.deal);
+            
+            if (dealProducts.length === 0) {
+                elements.dealsGrid.innerHTML = `
+                    <div class="col-span-full text-center py-8">
+                        <i class="fas fa-tag text-4xl text-gray-300 mb-3"></i>
+                        <h3 class="text-lg font-bold text-gray-500">No current deals</h3>
+                        <p class="text-gray-400 text-sm">Check back later for amazing offers!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            elements.dealsGrid.innerHTML = dealProducts.map(product => `
+                <div class="bg-white rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 border-2 border-red-300">
+                    <div class="bg-red-500 text-white p-2 text-center">
+                        <span class="font-bold text-sm">🔥 LIMITED TIME OFFER</span>
+                    </div>
+                    ${product.discount ? `<div class="absolute top-2 left-2 bg-red-600 text-white px-2 py-1 text-xs font-bold rounded-full z-10">${product.discount}</div>` : ''}
+                    
+                    <div class="p-1">
+                        <div class="text-xs font-semibold bg-${getStoreColor(product.store)}-100 text-${getStoreColor(product.store)}-800 px-2 py-1 rounded-full inline-block m-1">${product.store}</div>
+                    </div>
+                    
+                    <div class="image-container h-40 rounded-t-lg">
+                        <img src="${product.image}" alt="${product.name}" 
+                             class="product-image"
+                             onerror="this.src='https://via.placeholder.com/200x160/4ade80/ffffff?text=Deal'">
+                    </div>
+                    
+                    <div class="p-3">
+                        <h2 class="font-bold text-sm mb-1 text-gray-800 line-clamp-2">${product.name}</h2>
+                        <p class="text-gray-600 text-xs mb-2">${product.category}</p>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-green-600 font-bold text-lg">R${product.price.toFixed(2)}</span>
+                            <span class="text-red-500 font-bold text-xs">SAVE BIG!</span>
+                        </div>
+                        <button onclick="addToCart(${product.id})" 
+                                class="bg-red-500 text-white px-3 py-2 rounded-lg hover:bg-red-600 transition w-full font-semibold text-sm">
+                            <i class="fas fa-bolt mr-1"></i>Grab Deal Now!
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Helper function to get store color
+        function getStoreColor(store) {
+            const colors = {
+                'SPAR': 'red',
+                'Shoprite': 'blue',
+                'Checkers': 'green',
+                'USave': 'purple'
+            };
+            return colors[store] || 'gray';
+        }
+
+        // Filter by category
+        function filterByCategory(category) {
+            elements.categoryFilter.value = category;
+            renderAllProducts();
+            addToHistory('home');
+            showPage('home');
+            // Scroll to products section
+            document.getElementById('products-grid').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Cart Functions
+        function addToCart(productId) {
+            const product = productsData.find(p => p.id === productId);
+            const existingItem = cart.find(item => item.id === productId);
+
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({ ...product, quantity: 1 });
+            }
+
+            saveCart();
+            updateCartDisplay();
+            
+            // Show confirmation with animation
+            const button = event.target;
+            const originalText = button.innerHTML;
+            button.innerHTML = '<i class="fas fa-check mr-1"></i>Added!';
+            button.classList.remove('bg-green-600', 'hover:bg-green-700');
+            button.classList.add('bg-green-500');
+            
+            setTimeout(() => {
+                button.innerHTML = originalText;
+                button.classList.remove('bg-green-500');
+                button.classList.add('bg-green-600', 'hover:bg-green-700');
+            }, 2000);
+        }
+
+        function removeFromCart(productId) {
+            cart = cart.filter(item => item.id !== productId);
+            saveCart();
+            updateCartDisplay();
+            renderCart();
+        }
+
+        function updateQuantity(productId, change) {
+            const item = cart.find(item => item.id === productId);
+            if (item) {
+                item.quantity += change;
+                if (item.quantity <= 0) {
+                    removeFromCart(productId);
+                } else {
+                    saveCart();
+                    updateCartDisplay();
+                    renderCart();
+                }
+            }
+        }
+
+        function saveCart() {
+            localStorage.setItem('cart', JSON.stringify(cart));
+        }
+
+        function updateCartDisplay() {
+            const totalCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+            
+            if (totalCount > 0) {
+                elements.cartCount.textContent = totalCount;
+                elements.cartCount.classList.remove('hidden');
+            } else {
+                elements.cartCount.classList.add('hidden');
+            }
+        }
+
+        function renderCart() {
+            if (cart.length === 0) {
+                elements.emptyCart.classList.remove('hidden');
+                elements.cartTotal.classList.add('hidden');
+                elements.cartItems.innerHTML = '';
+                return;
+            }
+
+            elements.emptyCart.classList.add('hidden');
+            elements.cartTotal.classList.remove('hidden');
+
+            elements.cartItems.innerHTML = cart.map(item => `
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-3">
+                    <div class="flex flex-col sm:flex-row justify-between items-center">
+                        <div class="flex items-center space-x-3 mb-2 sm:mb-0">
+                            <div class="image-container w-16 h-16 rounded-lg">
+                                <img src="${item.image}" alt="${item.name}" 
+                                     class="cart-image"
+                                     onerror="this.src='https://via.placeholder.com/64x64/4ade80/ffffff?text=Product'">
+                            </div>
+                            <div class="max-w-[150px]">
+                                <h3 class="font-bold text-sm line-clamp-2">${item.name}</h3>
+                                <p class="text-gray-600 text-xs">${item.store} - ${item.category}</p>
+                                <p class="text-green-600 font-bold text-sm">R${item.price.toFixed(2)} each</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center space-x-3">
+                            <div class="flex items-center space-x-2">
+                                <button onclick="updateQuantity(${item.id}, -1)" 
+                                        class="bg-gray-200 text-gray-700 w-6 h-6 rounded-full hover:bg-gray-300 transition text-xs">
+                                    <i class="fas fa-minus"></i>
+                                </button>
+                                <span class="font-bold text-sm w-6 text-center">${item.quantity}</span>
+                                <button onclick="updateQuantity(${item.id}, 1)" 
+                                        class="bg-gray-200 text-gray-700 w-6 h-6 rounded-full hover:bg-gray-300 transition text-xs">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                            <p class="font-bold text-sm w-16 text-right">R${(item.price * item.quantity).toFixed(2)}</p>
+                            <button onclick="removeFromCart(${item.id})" 
+                                    class="bg-red-500 text-white w-6 h-6 rounded-full hover:bg-red-600 transition flex items-center justify-center text-xs">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const delivery = subtotal > 500 ? 0 : 50;
+            const total = subtotal + delivery;
+
+            elements.subtotalAmount.textContent = subtotal.toFixed(2);
+            elements.deliveryCost.textContent = delivery.toFixed(2);
+            elements.totalAmount.textContent = total.toFixed(2);
+
+            // Show free delivery message
+            if (subtotal > 500) {
+                elements.deliveryCost.innerHTML = '<span class="text-green-600">FREE!</span>';
+            }
+        }
+
+        function renderCheckout() {
+            if (cart.length === 0) {
+                elements.checkoutContent.innerHTML = `
+                    <div class="text-center py-8">
+                        <i class="fas fa-shopping-cart text-4xl text-gray-300 mb-3"></i>
+                        <h2 class="text-xl font-bold mb-3 text-gray-500">Your Cart is Empty</h2>
+                        <a href="#home" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition inline-block nav-link">
+                            <i class="fas fa-shopping-basket mr-2"></i>Start Shopping
+                        </a>
+                    </div>
+                `;
+                return;
+            }
+
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const delivery = subtotal > 500 ? 0 : 50;
+            const total = subtotal + delivery;
+
+            elements.checkoutContent.innerHTML = `
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Order Summary -->
+                    <div class="bg-white p-4 rounded-lg shadow-sm">
+                        <h3 class="text-lg font-bold mb-3">Order Summary</h3>
+                        <div class="space-y-3 mb-4">
+                            ${cart.map(item => `
+                                <div class="flex justify-between items-center border-b pb-2">
+                                    <div class="flex items-center space-x-2">
+                                        <div class="image-container w-10 h-10 rounded">
+                                            <img src="${item.image}" alt="${item.name}" 
+                                                 class="cart-image"
+                                                 onerror="this.src='https://via.placeholder.com/40x40/4ade80/ffffff?text=Product'">
+                                        </div>
+                                        <div class="max-w-[120px]">
+                                            <p class="font-medium text-sm">${item.name}</p>
+                                            <p class="text-xs text-gray-600">Qty: ${item.quantity}</p>
+                                        </div>
+                                    </div>
+                                    <p class="font-bold text-sm">R${(item.price * item.quantity).toFixed(2)}</p>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex justify-between">
+                                <span>Subtotal:</span>
+                                <span class="font-bold">R${subtotal.toFixed(2)}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Delivery:</span>
+                                <span class="font-bold ${delivery === 0 ? 'text-green-600' : ''}">
+                                    ${delivery === 0 ? 'FREE!' : 'R' + delivery.toFixed(2)}
+                                </span>
+                            </div>
+                            <div class="border-t pt-2 flex justify-between text-lg font-bold">
+                                <span>Total:</span>
+                                <span class="text-green-600">R${total.toFixed(2)}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Checkout Form -->
+                    <div class="bg-white p-4 rounded-lg shadow-sm">
+                        <h3 class="text-lg font-bold mb-3">Delivery Information</h3>
+                        <form id="checkout-form" class="space-y-3">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block font-bold mb-1 text-sm">First Name *</label>
+                                    <input type="text" required class="w-full border p-2 rounded-lg text-sm">
+                                </div>
+                                <div>
+                                    <label class="block font-bold mb-1 text-sm">Last Name *</label>
+                                    <input type="text" required class="w-full border p-2 rounded-lg text-sm">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block font-bold mb-1 text-sm">Email Address *</label>
+                                <input type="email" required class="w-full border p-2 rounded-lg text-sm">
+                            </div>
+                            <div>
+                                <label class="block font-bold mb-1 text-sm">Phone Number *</label>
+                                <input type="tel" required class="w-full border p-2 rounded-lg text-sm" placeholder="+27">
+                            </div>
+                            <div>
+                                <label class="block font-bold mb-1 text-sm">Delivery Address *</label>
+                                <textarea required class="w-full border p-2 rounded-lg text-sm" rows="2" placeholder="Street address, suburb, city, postal code"></textarea>
+                            </div>
+                            <div>
+                                <label class="block font-bold mb-1 text-sm">Delivery Instructions</label>
+                                <textarea class="w-full border p-2 rounded-lg text-sm" rows="2" placeholder="Any special delivery instructions?"></textarea>
+                            </div>
+                            <div class="bg-yellow-50 border border-yellow-200 p-3 rounded-lg">
+                                <h4 class="font-bold mb-1 text-sm">💡 Pro Tip</h4>
+                                <p class="text-xs text-yellow-800">Add R${(500 - subtotal).toFixed(2)} more to your cart to get FREE delivery!</p>
+                            </div>
+                            <button type="submit" class="bg-green-600 text-white px-4 py-3 rounded-lg hover:bg-green-700 transition w-full font-bold text-sm">
+                                <i class="fas fa-lock mr-1"></i>Complete Order - R${total.toFixed(2)}
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            `;
+
+            // Add form submission handler
+            document.getElementById('checkout-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                // Clear cart
+                cart = [];
+                saveCart();
+                updateCartDisplay();
+                
+                // Show success message
+                elements.checkoutContent.innerHTML = `
+                    <div class="text-center py-8 fade-in">
+                        <div class="text-4xl mb-3 text-green-500">✅</div>
+                        <h2 class="text-xl font-bold mb-3 text-green-600">Order Confirmed!</h2>
+                        <p class="text-base mb-4">Thank you for your order! Your groceries will be delivered within 2 hours.</p>
+                        <div class="bg-green-50 border border-green-200 p-4 rounded-lg max-w-md mx-auto mb-4">
+                            <h4 class="font-bold mb-1 text-sm">Order Details</h4>
+                            <p class="text-sm">Estimated delivery: Within 2 hours</p>
+                            <p class="text-sm">Order total: R${total.toFixed(2)}</p>
+                            <p class="text-xs text-gray-600 mt-1">You will receive an SMS confirmation shortly</p>
+                        </div>
+                        <a href="#home" class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition inline-block nav-link font-bold text-sm">
+                            <i class="fas fa-home mr-1"></i>Back to Home
+                        </a>
+                    </div>
+                `;
+            });
+        }
+
+        // Initialize the app when DOM is loaded
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
